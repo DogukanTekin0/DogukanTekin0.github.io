@@ -41,5 +41,36 @@
         </div>
       </main>
     </div>
+          <!-- Add this at the end of your <body> -->
+<script>
+// DVD Logo Animation Script
+const dvd = document.createElement('img');
+dvd.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Dvd_logo.svg/900px-Dvd_logo.svg.png?20070304130259';
+dvd.alt = 'DVD Logo';
+dvd.style.position = 'fixed';
+dvd.style.width = '160px';
+dvd.style.height = 'auto';
+dvd.style.left = '100px';
+dvd.style.top = '100px';
+dvd.style.zIndex = '9999';
+dvd.style.pointerEvents = 'none'; // So it doesn't block clicks
+document.body.appendChild(dvd);
+
+let x = 100, y = 100;
+let dx = 2, dy = 2;
+
+function animateDVD() {
+  const w = window.innerWidth - dvd.width;
+  const h = window.innerHeight - dvd.height;
+  x += dx;
+  y += dy;
+  if (x <= 0 || x >= w) dx = -dx;
+  if (y <= 0 || y >= h) dy = -dy;
+  dvd.style.left = x + 'px';
+  dvd.style.top = y + 'px';
+  requestAnimationFrame(animateDVD);
+}
+animateDVD();
+</script>it o
   </body>
 </html>

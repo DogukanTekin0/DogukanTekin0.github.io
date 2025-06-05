@@ -3,7 +3,10 @@
   <head>
     <title>Dogukan's Site</title>
     <link rel="stylesheet" 
-  href="style.css"/>
+    href="style.css"/>
+    <meta charset="UTF-8">
+    <title>Bouncing DVD Logo Animation Effects</title>
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
@@ -21,7 +24,6 @@
         </ul>
       </nav>
     </div>
-
       <main>
         <div class="sidebar">
           <img class="sidebar-img"
@@ -36,9 +38,239 @@
               <li>Wrestling</li>
               <li>Jiu Jitsu</li>
               <li>Working out</li>
+            <!-- Wordle goes here -->
+            <div id="wordle-container">
+              <h2>Wordle Clone</h2>
+              <div id="wordle-board"></div>
+              <input id="wordle-input" maxlength="5" autocomplete="off" placeholder="Type a 5-letter word" />
+              <button id="wordle-submit">Guess</button>
+              <div id="wordle-message"></div>
+    
             </ul>
           </div>
         </div>
       </main>
+      <!-- Add this at the end of your <body> -->
+<script>
+// DVD Logo Animation Script
+const dvd = document.createElement('img');
+dvd.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Dvd_logo.svg/900px-Dvd_logo.svg.png?20070304130259';
+dvd.alt = 'DVD Logo';
+dvd.style.position = 'fixed';
+dvd.style.width = '200px';
+dvd.style.height = 'auto';
+dvd.style.left = '100px';
+dvd.style.top = '100px';
+dvd.style.zIndex = '9999';
+dvd.style.pointerEvents = 'none'; // So it doesn't block clicks
+document.body.appendChild(dvd);
+
+let x = 100, y = 100;
+let dx = 2, dy = 2;
+
+function animateDVD() {
+  const w = window.innerWidth - dvd.width;
+  const h = window.innerHeight - dvd.height;
+  x += dx;
+  y += dy;
+  if (x <= 0 || x >= w) dx = -dx;
+  if (y <= 0 || y >= h) dy = -dy;
+  dvd.style.left = x + 'px';
+  dvd.style.top = y + 'px';
+  requestAnimationFrame(animateDVD);
+}
+animateDVD();
+</script>
+<script>
+// Stick Figure Fight Animation - 2 minutes, moves along the "floor"
+const fightCanvas = document.createElement('canvas');
+fightCanvas.width = window.innerWidth;
+fightCanvas.height = 200; // Increased height for visibility
+fightCanvas.style.position = 'fixed';
+fightCanvas.style.left = '0';
+fightCanvas.style.bottom = '0';
+fightCanvas.style.zIndex = '99999'; // Higher z-index
+fightCanvas.style.pointerEvents = 'none'; // Doesn't block clicks
+// fightCanvas.style.background = 'rgba(255,0,0,0.1)'; // Uncomment to debug visibility
+document.body.appendChild(fightCanvas);
+
+const ctx = fightCanvas.getContext('2d');
+
+let t = 0;
+const duration = 120; // seconds
+const fps = 60;
+const totalFrames = duration * fps;
+let frame = 0;
+
+function drawStickFigure(x, y, flip, punch) {
+  ctx.save();
+  ctx.translate(x, y);
+  if (flip) ctx.scale(-1, 1);
+
+  // Head
+  ctx.beginPath();
+  ctx.arc(0, -30, 12, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Body
+  ctx.beginPath();
+  ctx.moveTo(0, -18);
+  ctx.lineTo(0, 20);
+  ctx.stroke();
+
+  // Legs
+  ctx.beginPath();
+  ctx.moveTo(0, 20);
+  ctx.lineTo(-12, 45);
+  ctx.moveTo(0, 20);
+  ctx.lineTo(12, 45);
+  ctx.stroke();
+
+  // Left Arm
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(-20, punch ? -30 : 10);
+  ctx.stroke();
+
+  // Right Arm (punching)
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(20, punch ? -30 : 10);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function animateFight() {
+  ctx.clearRect(0, 0, fightCanvas.width, fightCanvas.height);
+
+  // Move figures left and right along the floor
+  const fightPhase = (Math.sin(t) + 1) / 2; // 0 to 1
+  const arenaWidth = fightCanvas.width - 200;
+  const leftX = 100 + fightPhase * (arenaWidth / 2 - 40);
+  const rightX = fightCanvas.width - 100 - fightPhase * (arenaWidth / 2 - 40);
+
+  // Punch when close
+  const punch = fightPhase > 0.7;
+
+  // Draw "floor"
+  ctx.beginPath();
+  ctx.moveTo(0, 180);
+  ctx.lineTo(fightCanvas.width, 180);
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "#444";
+  ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "#000";
+
+  // Draw stick figures
+  drawStickFigure(leftX, 170, false, punch);
+  drawStickFigure(rightX, 170, true, punch);
+
+  t += 0.03;
+  frame++;
+  if (frame < totalFrames) {
+    requestAnimationFrame(animateFight);
+  }
+}
+
+// Responsive: adjust canvas width on resize
+window.addEventListener('resize', () => {
+  fightCanvas.width = window.innerWidth;
+});
+
+animateFight();
+</script>
+<script>
+// Simple Wordle Clone
+const WORDS = ["APPLE", "GRAPE", "PLANT", "BRAVE", "CRANE", "SHARE", "PLANE", "SNAKE", "BRAIN", "CHAIR"];
+const ANSWER = WORDS[Math.floor(Math.random() * WORDS.length)];
+const MAX_GUESSES = 6;
+
+const board = document.getElementById('wordle-board');
+const input = document.getElementById('wordle-input');
+const submit = document.getElementById('wordle-submit');
+const message = document.getElementById('wordle-message');
+
+let currentRow = 0;
+let gameOver = false;
+
+// Create board
+for (let i = 0; i < MAX_GUESSES; i++) {
+  const row = document.createElement('div');
+  row.className = 'wordle-row';
+  for (let j = 0; j < 5; j++) {
+    const cell = document.createElement('div');
+    cell.className = 'wordle-cell';
+    row.appendChild(cell);
+  }
+  board.appendChild(row);
+}
+
+function checkGuess(guess) {
+  guess = guess.toUpperCase();
+  const answerArr = ANSWER.split('');
+  const guessArr = guess.split('');
+  const result = Array(5).fill('absent');
+  const answerUsed = Array(5).fill(false);
+
+  // First pass: correct letters
+  for (let i = 0; i < 5; i++) {
+    if (guessArr[i] === answerArr[i]) {
+      result[i] = 'correct';
+      answerUsed[i] = true;
+    }
+  }
+  // Second pass: present letters
+  for (let i = 0; i < 5; i++) {
+    if (result[i] === 'correct') continue;
+    for (let j = 0; j < 5; j++) {
+      if (!answerUsed[j] && guessArr[i] === answerArr[j]) {
+        result[i] = 'present';
+        answerUsed[j] = true;
+        break;
+      }
+    }
+  }
+  return result;
+}
+
+function showGuess(guess, result) {
+  const row = board.children[currentRow];
+  for (let i = 0; i < 5; i++) {
+    const cell = row.children[i];
+    cell.textContent = guess[i] || '';
+    cell.className = 'wordle-cell ' + (result ? result[i] : '');
+  }
+}
+
+function handleGuess() {
+  if (gameOver) return;
+  const guess = input.value.trim().toUpperCase();
+  if (guess.length !== 5) {
+    message.textContent = "Enter a 5-letter word!";
+    return;
+  }
+  showGuess(guess, checkGuess(guess));
+  if (guess === ANSWER) {
+    message.textContent = "🎉 You guessed it!";
+    gameOver = true;
+    return;
+  }
+  currentRow++;
+  if (currentRow >= MAX_GUESSES) {
+    message.textContent = `The word was: ${ANSWER}`;
+    gameOver = true;
+    return;
+  }
+  input.value = '';
+  message.textContent = '';
+}
+
+submit.onclick = handleGuess;
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleGuess();
+});
+</script>
   </body>
 </html>
